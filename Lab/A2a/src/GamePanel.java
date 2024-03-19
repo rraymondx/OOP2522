@@ -1,5 +1,3 @@
-package gameplay;
-
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,6 +9,12 @@ public class GamePanel extends JPanel {
     private World world;
     private int cellSize;
 
+    /**
+     * GamePanel Constructor
+     * 
+     * @param world World world
+     * @param cellSize int cellSize
+     */
     public GamePanel(World world, int cellSize) {
         this.world = world;
         this.cellSize = cellSize;
@@ -20,21 +24,29 @@ public class GamePanel extends JPanel {
         setBackground(Color.WHITE);
 
         addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent e) {
-        	    super.mouseClicked(e);
-        	    world.update();
-        	    repaint();
-        	}
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                world.update();
+                repaint();
+            }
         });
     }
 
+    /**
+     * paints the graphical component
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawGrid(g);
     }
-    
+
+    /**
+     * Draws the cell blocks
+     * 
+     * @param g Graphics
+     */
     private void drawGrid(Graphics g) {
         for (int i = 0; i < world.getWidth(); i++) {
             for (int j = 0; j < world.getHeight(); j++) {

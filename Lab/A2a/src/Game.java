@@ -1,5 +1,3 @@
-package gameplay;
-
 import javax.swing.JFrame;
 
 public class Game extends JFrame {
@@ -7,10 +5,17 @@ public class Game extends JFrame {
     private GamePanel gamePanel;
     private int cellSize;
 
+    /**
+     * Game Constructor
+     * 
+     * @param width int width of the world
+     * @param height int height of the world
+     * @param cellSize int cellSize, pixel of each cell block
+     */
     public Game(int width, int height, int cellSize) {
         this.cellSize = cellSize;
         this.world = new World(width, height);
-        world.initializeCells();
+        this.world.initializeCells();
         this.gamePanel = new GamePanel(world, cellSize);
         add(gamePanel);
         setTitle("Game of Life");
@@ -20,26 +25,16 @@ public class Game extends JFrame {
         setVisible(true);
     }
 
-    public void startSimulation() {
-        while (true) {
-            world.update();
-            gamePanel.repaint();
-            try {
-                Thread.sleep(2000);
-                
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
+    /**
+     * Executes the program
+     * 
+     * @param args not used
+     */
     public static void main(String[] args) {
         int width = 25;
         int height = 25;
-        int cellSize = 25;
+        int cellSize = 20;
         Game game = new Game(width, height, cellSize);
-        game.startSimulation();
     }
-    
 
 }
