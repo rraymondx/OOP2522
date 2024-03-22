@@ -43,6 +43,10 @@ public class Cell {
             bgColour = Color.YELLOW;
         } else if(lifeForm instanceof Plants) {
             bgColour = Color.GREEN;
+        } else if(lifeForm instanceof Carnivore) {
+            bgColour = Color.RED;
+        } else if(lifeForm instanceof Omnivore) {
+            bgColour = Color.BLUE;
         }
     }
 

@@ -19,6 +19,16 @@ public abstract class LifeForm {
     public abstract void behave();
 
     /**
+     * Method to determine how each LifeForm "eats"
+     */
+    public abstract void eat(Cell eatCell);
+
+    /**
+     * 
+     */
+    public abstract void breed();
+
+    /**
      * Method to clear the cell once any instance of lifeForm "dies"
      */
     public void die() {

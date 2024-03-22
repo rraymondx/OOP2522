@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Plants extends LifeForm implements HerbEdible {
+public class Plants extends LifeForm implements HerbEdible, OmniEdible {
 
     private World world;
 
@@ -27,7 +27,7 @@ public class Plants extends LifeForm implements HerbEdible {
     /**
      * Spreads seed to increase the plant growth
      */
-    private void breed() {
+    public void breed() {
         // Get neighboring cells
         Cell[] neighbors = world.getNeighbourCells(cell.getX(), cell.getY());
 
@@ -39,8 +39,8 @@ public class Plants extends LifeForm implements HerbEdible {
             }
         }
         
-        // Check if there are at least 3 empty neighboring cells and exactly 4 other plants
-        if (countOtherPlants(neighbors) == 4 && emptyNeighbors.size() >= 3 ) {
+        // Check if there are at least 3 empty neighboring cells, 2 plant neighbour. 
+        if (countOtherPlants(neighbors) >= 2 && emptyNeighbors.size() >= 3 ) {
             // Send seeds to a random empty neighboring cell
             int randomIndex = RandomGenerator.nextNumber(emptyNeighbors.size());
             Cell randomEmptyNeighbor = emptyNeighbors.get(randomIndex);
@@ -63,6 +63,11 @@ public class Plants extends LifeForm implements HerbEdible {
             }
         }
         return plantCount;
+    }
+
+    @Override
+    public void eat(Cell eatCell) {
+        // does nothing;
     }
 
 }
