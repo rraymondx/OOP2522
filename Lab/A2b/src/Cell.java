@@ -87,7 +87,7 @@ public class Cell {
     }
 
     public boolean isFilled() {
-        return filled;
+        return lifeForm == null ? false : true;
     }
 
     /**

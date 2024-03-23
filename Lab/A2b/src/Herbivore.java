@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Herbivore Class
+ */
 public class Herbivore extends LifeForm implements CarniEdible, OmniEdible{
 
     private World world;
@@ -28,9 +31,12 @@ public class Herbivore extends LifeForm implements CarniEdible, OmniEdible{
             die();
         } else {
             move();
-            breed(); // might be, most definitely busted
-            hasAction = false;
+            if(!(hasBred)) {
+                breed();
+                hasBred = true;
+            }
         }
+        hasAction = false;
         health--;
     }
 
@@ -42,36 +48,26 @@ public class Herbivore extends LifeForm implements CarniEdible, OmniEdible{
         // Get neighboring cells
         Cell[] neighbors = world.getNeighbourCells(cell.getX(), cell.getY());
 
-        List<Cell> emptyNeighbors = new ArrayList<>();
+        // Add either non-filled space or herbEdible to (validSpot)
+        List<Cell> validSpot = new ArrayList<>();
         for(Cell neighbor: neighbors) {
-            if(!(neighbor.getLife() instanceof Herbivore)) {
-                emptyNeighbors.add(neighbor);
+            if(!(neighbor.isFilled() || neighbor.getLife() instanceof HerbEdible)) {
+                validSpot.add(neighbor);
             }
         }
 
-        // If there are empty neighboring cells, randomly pick one
-        if (!emptyNeighbors.isEmpty()) {
-            int randomIndex = RandomGenerator.nextNumber(emptyNeighbors.size());
-            Cell randomEmptyNeighbor = emptyNeighbors.get(randomIndex);
-            moveToCell(randomEmptyNeighbor);
+        // if the neighboring cells are not empty, move to a random empty cell.
+        if (!validSpot.isEmpty()) {
+            int randomIndex = RandomGenerator.nextNumber(validSpot.size());
+            Cell randomValidSpot = validSpot.get(randomIndex);
+            if(randomValidSpot.isFilled() && randomValidSpot.getLife() instanceof HerbEdible) {
+                eat(randomValidSpot);
+            }
+            // Move the herbivore to the destination cell
+            randomValidSpot.setLifeForm(this);
+            cell.clearCell();
+            cell = randomValidSpot; // Update the reference to the current cell
         } 
-    }
-
-    /**
-     * Checks to see if it is edible by herbivores, and if it is, it eats it, and it clears the cell.
-     * 
-     * @param destination
-     */
-    private void moveToCell(Cell destination) {
-        if (destination.getLife() instanceof HerbEdible) {
-            // If the destination cell contains a plant, eat it and reset healths
-            eat(destination);
-        }
-        // Move the herbivore to the destination cell
-        destination.setLifeForm(this);
-        cell.clearCell();
-        cell = destination; // Update the reference to the current cell
-        
     }
 
     /**
@@ -80,66 +76,54 @@ public class Herbivore extends LifeForm implements CarniEdible, OmniEdible{
      * @param Cell eatingPlantCells 
      */
     @Override
-    public void eat(Cell eatingPlantCells) {
+    public void eat(Cell eatCell) {
         health = 5;
-        eatingPlantCells.clearCell();
+        eatCell.clearCell();
     }
 
     /**
-     * Spreads seed to increase the plant growth
+     * Breeds Herbivores. 
      */
     public void breed() {
         // Get neighboring cells
         Cell[] neighbors = world.getNeighbourCells(cell.getX(), cell.getY());
 
-        // Count the number of empty neighboring cells
+        // Variable for how many herbivores are surrounding current herbivore
+        int herbCount = 0;
+
+        // Variable for how many "food" items surrounding current herbivore
+        int foodCount = 0;
+
+        // Count the number of empty neighboring cells, meaning that the cell (is not filled)
         List<Cell> emptyNeighbors = new ArrayList<>();
+
+        // Loop through the neighbors arr
         for(Cell neighbor : neighbors) {
-            if (!neighbor.isFilled()) {
+            // Finding empty neighbors
+            if (!(neighbor.isFilled())) {
                 emptyNeighbors.add(neighbor);
+            }
+            // Finding herbivores that are surrounding current herbivore
+            if(neighbor.isFilled() && neighbor.getLife() instanceof Herbivore) {
+                herbCount++;
+            }
+            // Finding herbEdibles that are surrounding current herbivore
+            if(neighbor.isFilled() && neighbor.getLife() instanceof HerbEdible) {
+                foodCount++;
             }
         }
         
         // Check if there are at least 1 herbivore, 2 empty neighbouring cells, and 2 foodcells "plants"
-        if (countOtherHerbi(neighbors) >= 1 && emptyNeighbors.size() >= 2 && foodCount(neighbors) >= 2) {
-            // Send seeds to a random empty neighboring cell
+        // to perform breed function
+        if (herbCount >= 1 && emptyNeighbors.size() >= 2 && foodCount >= 2) {
+            // randomly breed at an empty cell.
             int randomIndex = RandomGenerator.nextNumber(emptyNeighbors.size());
             Cell randomEmptyNeighbor = emptyNeighbors.get(randomIndex);
-            // Create a new plant in the random empty neighboring cell
-            randomEmptyNeighbor.setLifeForm(new Herbivore(randomEmptyNeighbor, world));
+            // Create a new Herivore in the random empty neighboring cell
+            // Sets hasAction to false so they dont immediately perform their behave().
+            Herbivore n = new Herbivore(randomEmptyNeighbor, world);
+            n.hasAction = false;
+            randomEmptyNeighbor.setLifeForm(n);
         }
     }
-
-    /**
-     * Determines how many neighbouring Herbivores there are.
-     * 
-     * @param neighbors Cell
-     * @return int how many herbivore neighbours it has 
-     */
-    private int countOtherHerbi(Cell[] neighbors) {
-        int herbCount = 0;
-        for (Cell neighbor : neighbors) {
-            if (neighbor.getLife() instanceof Herbivore) {
-                herbCount++;
-            }
-        }
-        return herbCount;
-    }
-
-    /**
-     * Determines how many neighbouring plants there are.
-     * 
-     * @param neighbors Cell
-     * @return int how many plant neighbours it has 
-     */
-    private int foodCount(Cell[] neighbors) {
-        int plantCount = 0;
-        for (Cell neighbor : neighbors) {
-            if (neighbor.getLife() instanceof HerbEdible) {
-                plantCount++;
-            }
-        }
-        return plantCount;
-    }
-
 }

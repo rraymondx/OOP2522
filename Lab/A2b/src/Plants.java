@@ -13,6 +13,7 @@ public class Plants extends LifeForm implements HerbEdible, OmniEdible {
      */
     public Plants(Cell cell, World world) {
         super(cell);
+        this.cell = cell;
         this.world = world;
     }
 
@@ -21,7 +22,11 @@ public class Plants extends LifeForm implements HerbEdible, OmniEdible {
      */
     @Override
     public void behave() {
-        breed();
+        if(!(hasBred)) {
+            breed();
+            hasBred = true;
+        }
+        hasAction = false;
     }
 
     /**
@@ -31,38 +36,32 @@ public class Plants extends LifeForm implements HerbEdible, OmniEdible {
         // Get neighboring cells
         Cell[] neighbors = world.getNeighbourCells(cell.getX(), cell.getY());
 
+        // Variables for how many plants are surrounding current plant
+        int plantCount = 0;
+
         // Count the number of empty neighboring cells
         List<Cell> emptyNeighbors = new ArrayList<>();
         for (Cell neighbor : neighbors) {
-            if (!neighbor.isFilled()) {
+            // Finding empty neighbors.
+            if (!(neighbor.isFilled())) {
                 emptyNeighbors.add(neighbor);
+            }
+            // Counts how many plants are near current plant.
+            if(neighbor.isFilled() && neighbor.getLife() instanceof Plants) {
+                plantCount++;
             }
         }
         
         // Check if there are at least 3 empty neighboring cells, 2 plant neighbour. 
-        if (countOtherPlants(neighbors) >= 2 && emptyNeighbors.size() >= 3 ) {
+        if (plantCount >= 2 && emptyNeighbors.size() >= 3 ) {
             // Send seeds to a random empty neighboring cell
             int randomIndex = RandomGenerator.nextNumber(emptyNeighbors.size());
             Cell randomEmptyNeighbor = emptyNeighbors.get(randomIndex);
             // Create a new plant in the random empty neighboring cell
-            randomEmptyNeighbor.setLifeForm(new Plants(randomEmptyNeighbor, world));
+            Plants p = new Plants(randomEmptyNeighbor, world);
+            p.hasAction = false;
+            randomEmptyNeighbor.setLifeForm(p);
         }
-    }
-
-    /**
-     * Determines how many neighbouring plants there are.
-     * 
-     * @param neighbors Cell
-     * @return int how many plant neighbours it has 
-     */
-    private int countOtherPlants(Cell[] neighbors) {
-        int plantCount = 0;
-        for (Cell neighbor : neighbors) {
-            if (neighbor.getLife() instanceof Plants) {
-                plantCount++;
-            }
-        }
-        return plantCount;
     }
 
     @Override

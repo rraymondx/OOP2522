@@ -19,15 +19,21 @@ public class Carnivore extends LifeForm implements OmniEdible{
         this.world = world;
     }
 
+    /**
+     * Does all actions that a Carnivore should do
+     */
     @Override
     public void behave() { 
         if(health == 0) {
             die();
         } else {
             move();
-            breed(); // might be, most definitely busted
-            hasAction = false;
+            if(!(hasBred)) {
+                breed();
+                hasBred = true;
+            }
         }
+        hasAction = false;
         health--;
     }
 
@@ -39,36 +45,24 @@ public class Carnivore extends LifeForm implements OmniEdible{
         // Get neighboring cells
         Cell[] neighbors = world.getNeighbourCells(cell.getX(), cell.getY());
 
-        List<Cell> emptyNeighbors = new ArrayList<>();
+        List<Cell> validSpot = new ArrayList<>();
         for(Cell neighbor: neighbors) {
-            if(!(neighbor.getLife() instanceof Carnivore)) {
-                emptyNeighbors.add(neighbor);
+            if(!(neighbor.isFilled()) || neighbor.getLife() instanceof CarniEdible) {
+                validSpot.add(neighbor);
             }
         }
 
-        // If there are empty neighboring cells, randomly pick one
-        if (!emptyNeighbors.isEmpty()) {
-            int randomIndex = RandomGenerator.nextNumber(emptyNeighbors.size());
-            Cell randomEmptyNeighbor = emptyNeighbors.get(randomIndex);
-            moveToCell(randomEmptyNeighbor);
+        // if the neighboring cells are not empty, move to a random empty cell.
+        if (!validSpot.isEmpty()) {
+            int randomIndex = RandomGenerator.nextNumber(validSpot.size());
+            Cell randomValidSpot = validSpot.get(randomIndex);
+            if(randomValidSpot.isFilled() && randomValidSpot.getLife() instanceof CarniEdible) {
+                eat(randomValidSpot);
+            }
+            randomValidSpot.setLifeForm(this);
+            cell.clearCell();
+            cell = randomValidSpot;
         } 
-    }
-
-    /**
-     * Checks to see if it is edible by herbivores, and if it is, it eats it, and it clears the cell.
-     * 
-     * @param destination
-     */
-    private void moveToCell(Cell destination) {
-        if (destination.getLife() instanceof CarniEdible) {
-            // If the destination cell contains a plant, eat it and reset healths
-            eat(destination);
-        }
-        // Move the herbivore to the destination cell
-        destination.setLifeForm(this);
-        cell.clearCell();
-        cell = destination; // Update the reference to the current cell
-        
     }
 
     @Override
@@ -82,54 +76,38 @@ public class Carnivore extends LifeForm implements OmniEdible{
         // Get neighboring cells
         Cell[] neighbors = world.getNeighbourCells(cell.getX(), cell.getY());
 
+        // Variable for amount of carnivores surrounding current carnivores
+        int carniCount = 0;
+
+        // Variable for amount of food items surrounding current carnivores
+        int foodCount = 0;
+
         // Count the number of empty neighboring cells
         List<Cell> emptyNeighbors = new ArrayList<>();
         for(Cell neighbor : neighbors) {
+            // Finding empty neighbors
             if (!neighbor.isFilled()) {
                 emptyNeighbors.add(neighbor);
+            }
+            // Finding amount of carnivores surrounding current one
+            if(neighbor.isFilled() && neighbor.getLife() instanceof Carnivore) {
+                carniCount++;
+            }
+            // Finding amount of food items surrounding current carnivore
+            if(neighbor.isFilled() && neighbor.getLife() instanceof CarniEdible) {
+                foodCount++;
             }
         }
         
         // Check if there are at least 1 carnivore, 3 empty neighbouring cells, and 2 foodcells "plants"
-        if (countOtherCarni(neighbors) >= 1 && emptyNeighbors.size() >= 3 && foodCount(neighbors) >= 2) {
+        if (carniCount >= 1 && emptyNeighbors.size() >= 3 && foodCount >= 2) {
             // Send seeds to a random empty neighboring cell
             int randomIndex = RandomGenerator.nextNumber(emptyNeighbors.size());
             Cell randomEmptyNeighbor = emptyNeighbors.get(randomIndex);
-            // Create a new plant in the random empty neighboring cell
-            randomEmptyNeighbor.setLifeForm(new Carnivore(randomEmptyNeighbor, world));
+            // Create new Carnivore in empty neighboring cell
+            Carnivore c = new Carnivore(randomEmptyNeighbor, world);
+            c.hasAction = false;
+            randomEmptyNeighbor.setLifeForm(c);
         }
     }
-
-    /**
-     * Determines how many neighbouring Carnivores there are.
-     * 
-     * @param neighbors Cell
-     * @return int how many Carnivore neighbours it has
-     */
-    private int countOtherCarni(Cell[] neighbors) {
-        int carniCount = 0;
-        for (Cell neighbor : neighbors) {
-            if (neighbor.getLife() instanceof Herbivore) {
-                carniCount++;
-            }
-        }
-        return carniCount;
-    }
-
-    /**
-     * Determines how many neighbouring "food" there are.
-     * 
-     * @param neighbors Cell
-     * @return int how many "food" neighbours it has 
-     */
-    private int foodCount(Cell[] neighbors) {
-        int foodCount = 0;
-        for (Cell neighbor : neighbors) {
-            if (neighbor.getLife() instanceof CarniEdible) {
-                foodCount++;
-            }
-        }
-        return foodCount;
-    }
-
 }

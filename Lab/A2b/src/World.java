@@ -32,19 +32,36 @@ public class World {
      */
     public void initializeCells() {
         // RandomGenerator.reset();
-        for (int j = 0; j < height; j++) {
+        for(int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 grid[i][j] = new Cell(i, j); 
                 int randomNumber = RandomGenerator.nextNumber(100);
-                if(randomNumber >= 80) {
-                    grid[i][j].setLifeForm(new Herbivore(grid[i][j], this));
-                } else if(randomNumber >= 60) {
-                    grid[i][j].setLifeForm(new Plants(grid[i][j], this));
-                } else if(randomNumber >= 50) {
+                if(randomNumber >= 95) {
+                    grid[i][j].setLifeForm(new Omnivore(grid[i][j], this));    
+                } else if(randomNumber >= 85) {
                     grid[i][j].setLifeForm(new Carnivore(grid[i][j], this));
+                } else if(randomNumber >= 65) {
+                    grid[i][j].setLifeForm(new Herbivore(grid[i][j], this));
                 } else if(randomNumber >= 45) {
-                    grid[i][j].setLifeForm(new Omnivore(grid[i][j], this));
+                    grid[i][j].setLifeForm(new Plants(grid[i][j], this));
                 }
+
+                // test for fixing breed with herbivores and plants
+                // if(randomNumber >= 70) {
+                //     grid[i][j].setLifeForm(new Herbivore(grid[i][j], this));
+                // } else if(randomNumber >= 20) {
+                //     grid[i][j].setLifeForm(new Plants(grid[i][j], this));
+                // }
+
+                // if(randomNumber >= 80) {
+                //     grid[i][j].setLifeForm(new Herbivore(grid[i][j], this));
+                // } else if(randomNumber >= 70) {
+                //     grid[i][j].setLifeForm(new Plants(grid[i][j], this));
+                // } else if(randomNumber >= 85) {
+                //     grid[i][j].setLifeForm(new Carnivore(grid[i][j], this));
+                // } else if(randomNumber >= 95) {
+                //     grid[i][j].setLifeForm(new Omnivore(grid[i][j], this));
+                // }
                 // Otherwise, leave the cell empty
             }
         }
@@ -73,7 +90,6 @@ public class World {
                 }
             }
         }
-
     }
     
     /**
