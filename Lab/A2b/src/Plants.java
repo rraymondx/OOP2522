@@ -22,10 +22,7 @@ public class Plants extends LifeForm implements HerbEdible, OmniEdible {
      */
     @Override
     public void behave() {
-        if(!(hasBred)) {
-            breed();
-            hasBred = true;
-        }
+        breed();
         hasAction = false;
     }
 

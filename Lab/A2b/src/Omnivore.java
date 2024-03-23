@@ -6,7 +6,7 @@ public class Omnivore extends LifeForm implements CarniEdible{
     private World world;
     public int health;
     static int count = 0;
-    private int id = 0;
+    // private int id = 0;
     
     /**
      * Herbivore Constructor
@@ -19,7 +19,7 @@ public class Omnivore extends LifeForm implements CarniEdible{
         health = 5;
         this.cell = cell;
         this.world = world;
-        id = count++;
+        // id = count++;
     }
 
     /**
@@ -29,16 +29,9 @@ public class Omnivore extends LifeForm implements CarniEdible{
     public void behave() { 
         if(health == 0) {
             die();
-            if (id==0) System.out.println("I am omnivore, I died!! ");
         } else {
             move();
-            if(!(hasBred)) {
-                breed();
-                hasBred = true;
-            }
-        }
-        if (id == 0) {
-            System.out.println("i am at " + cell.getX() + " " + cell.getY());
+            breed();
         }
         hasAction = false;
         health--;
@@ -119,7 +112,7 @@ public class Omnivore extends LifeForm implements CarniEdible{
             Cell randomEmptyNeighbor = emptyNeighbors.get(randomIndex);
             // Create new Omnivore in empty neighboring cell
             Omnivore o = new Omnivore(randomEmptyNeighbor, world);
-            o.hasBred= false;
+            o.hasAction= false;
             randomEmptyNeighbor.setLifeForm(o);
         }
     }

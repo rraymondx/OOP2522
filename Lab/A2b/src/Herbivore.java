@@ -31,10 +31,7 @@ public class Herbivore extends LifeForm implements CarniEdible, OmniEdible{
             die();
         } else {
             move();
-            if(!(hasBred)) {
-                breed();
-                hasBred = true;
-            }
+            breed();
         }
         hasAction = false;
         health--;

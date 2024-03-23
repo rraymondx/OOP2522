@@ -2,7 +2,6 @@ public abstract class LifeForm {
     Cell cell;
     protected boolean alive;
     public boolean hasAction;
-    public boolean hasBred;
 
     /**
      * LifeForm Constructor.
@@ -11,7 +10,6 @@ public abstract class LifeForm {
      */
     public LifeForm(Cell cell) {
         this.hasAction = true;
-        this.hasBred = false;
         this.cell = cell;
         this.alive = true;
     }
