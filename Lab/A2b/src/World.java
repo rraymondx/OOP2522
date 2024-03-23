@@ -36,7 +36,6 @@ public class World {
             for (int i = 0; i < width; i++) {
                 grid[i][j] = new Cell(i, j); 
                 int randomNumber = RandomGenerator.nextNumber(100);
-
                 if(randomNumber >= 80) {
                     grid[i][j].setLifeForm(new Herbivore(grid[i][j], this));
                 } else if(randomNumber >= 60) {
