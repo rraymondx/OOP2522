@@ -52,7 +52,6 @@ public class Omnivore extends LifeForm implements CarniEdible{
         // Get neighboring cells
         Cell[] neighbors = world.getNeighbourCells(cell.getX(), cell.getY());
 
-        
         List<Cell> validSpot = new ArrayList<>();
         for(Cell neighbor: neighbors) {
             if(!(neighbor.isFilled()) || neighbor.getLife() instanceof OmniEdible) {

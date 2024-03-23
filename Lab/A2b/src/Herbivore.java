@@ -51,7 +51,7 @@ public class Herbivore extends LifeForm implements CarniEdible, OmniEdible{
         // Add either non-filled space or herbEdible to (validSpot)
         List<Cell> validSpot = new ArrayList<>();
         for(Cell neighbor: neighbors) {
-            if(!(neighbor.isFilled() || neighbor.getLife() instanceof HerbEdible)) {
+            if(!(neighbor.isFilled()) || neighbor.getLife() instanceof HerbEdible) {
                 validSpot.add(neighbor);
             }
         }
