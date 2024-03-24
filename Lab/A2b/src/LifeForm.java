@@ -24,7 +24,7 @@ public abstract class LifeForm {
     public abstract void eat(Cell eatCell);
 
     /**
-     * 
+     * Method to determine how each class "breeds"
      */
     public abstract void breed();
 
